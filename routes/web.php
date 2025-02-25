@@ -27,3 +27,4 @@ use App\Http\Controllers\FeedbackController;
 
 Route::get('/feedback', [FeedbackController::class, 'create'])->name('feedback.create');
 Route::post('/feedback/send', [FeedbackController::class, 'send'])->name('feedback.send');
+Route::get('/feedback/success', [FeedbackController::class, 'success'])->name('feedback.success');

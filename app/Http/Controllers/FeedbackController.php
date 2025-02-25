@@ -3,26 +3,43 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Mail\Feedback;
+use Illuminate\Support\Facades\Mail;
 
 class FeedbackController extends Controller
 {
-    // Show the feedback form
+    // Display the feedback form
     public function create()
     {
         return view('feedback-form');
     }
 
-    // Handle the form submission
+    // Handle the form submission and send the email
     public function send(Request $request)
     {
-        // Validate form input
+        // Validate the incoming form data
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email',
-            'message' => 'required|string|min:10',
+            'fullname' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'comment' => 'required|string',
         ]);
 
-        // For now, just return back with a success message
-        return back()->with('success', 'Thank you for your feedback!');
+        // Retrieve the validated form data
+        $fullname = $request->input('fullname');
+        $email = $request->input('email');
+        $comment = $request->input('comment');
+
+        // Send the email using the Feedback Mailable class
+        Mail::to('comp3385@uwi.edu', 'COMP3385 Course Admin') // Send to the admin email
+            ->send(new Feedback($fullname, $email, $comment)); // Send the feedback email
+
+        // Redirect to a success page with a success message
+        return redirect('/feedback/success')->with('message', 'Thank you for your feedback!');
+    }
+
+    // Show the success page
+    public function success()
+    {
+        return view('feedback-success'); // The success view after form submission
     }
 }
